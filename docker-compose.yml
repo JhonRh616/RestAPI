@@ -1,0 +1,79 @@
+version: '3.9'
+services:
+  config-server:
+    build: ./microservices/config-server
+    container_name: config-server
+    ports:
+      - "8888:8888"
+    networks:
+      - api-network
+
+  eureka-server:
+    build: ./microservices/eureka-server
+    container_name: eureka-server
+    ports:
+      - "8761:8761"
+    depends_on:
+      - config-server
+    networks:
+      - api-network
+    environment:
+      - SPRING_CLOUD_CONFIG_URI=http://config-server:8888
+      - SPRING_PROFILES_ACTIVE=docker
+
+  gateway-server:
+    build: ./microservices/gateway-server
+    container_name: gateway-server
+    ports:
+      - "8080:8080"
+    depends_on:
+      - eureka-server
+    networks:
+      - api-network
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka
+      - CONFIG_SERVER_URI=http://config-server:8888
+
+  articles-service:
+    build: ./microservices/articles-service
+    container_name: articles-service
+    ports:
+      - "8082:8082"
+    depends_on:
+      - eureka-server
+      - config-server
+    networks:
+      - api-network
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka
+      - CONFIG_SERVER_URI=http://config-server:8888
+
+  search-service:
+    build: ./microservices/search-service
+    container_name: search-service
+    ports:
+      - "8083:8083"
+    depends_on:
+      - eureka-server
+      - config-server
+    networks:
+      - api-network
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka
+      - CONFIG_SERVER_URI=http://config-server:8888
+
+  frontend:
+    build: ./frontend
+    container_name: api-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - gateway-server
+    networks:
+      - api-network
+
+networks:
+  api-network:
+    driver: bridge

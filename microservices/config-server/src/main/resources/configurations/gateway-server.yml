@@ -1,0 +1,18 @@
+server:
+  port: 8080
+
+spring:
+  cloud:
+    gateway:
+      server:
+        webmvc:
+          routes:
+            - id: articles-service
+              uri: lb://articles-service
+              predicates:
+                - Path=/api/articles/**
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
