@@ -1,69 +1,109 @@
 version: '3.9'
 services:
+  # ------------------------------------------------------------
+  # 1. Config Server (Source of Health Check)
+  # ------------------------------------------------------------
   config-server:
-    build: ./microservices/config-server
-    container_name: config-server
+    build: "./microservices/config-server"
+    container_name: restapi-config-server
     ports:
       - "8888:8888"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    volumes:
+      - "./microservices/config-server/src/main/resources/configurations:/configurations"
     networks:
       - api-network
+    command: ["java", "-jar", "/app/app.jar", "--spring.profiles.active=docker"]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8888/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
+  # ------------------------------------------------------------
+  # 2. Eureka Server (Profile forced via command)
+  # ------------------------------------------------------------
   eureka-server:
     build: ./microservices/eureka-server
     container_name: eureka-server
     ports:
       - "8761:8761"
     depends_on:
-      - config-server
+      config-server:
+        condition: service_healthy # Espera que Config Server esté listo
     networks:
       - api-network
     environment:
-      - SPRING_CLOUD_CONFIG_URI=http://config-server:8888
+      # Usamos CONFIG_SERVER_URI para el import del YML
+      - CONFIG_SERVER_URI=http://config-server:8888
       - SPRING_PROFILES_ACTIVE=docker
+    # CRUCIAL: Forzamos el perfil 'docker' con un argumento de comando
+    command: ["java", "-jar", "/app/app.jar", "--spring.profiles.active=docker"]
 
+  # ------------------------------------------------------------
+  # 3. Gateway Server
+  # ------------------------------------------------------------
   gateway-server:
     build: ./microservices/gateway-server
     container_name: gateway-server
     ports:
       - "8080:8080"
     depends_on:
-      - eureka-server
+      config-server:
+        condition: service_healthy
+      eureka-server:
+        condition: service_started
     networks:
       - api-network
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka
       - CONFIG_SERVER_URI=http://config-server:8888
+    command: ["java", "-jar", "/app/app.jar", "--spring.profiles.active=docker"] # Forzamos perfil
 
+  # ------------------------------------------------------------
+  # 4. Articles Service
+  # ------------------------------------------------------------
   articles-service:
     build: ./microservices/articles-service
     container_name: articles-service
     ports:
       - "8082:8082"
     depends_on:
-      - eureka-server
-      - config-server
+      config-server:
+        condition: service_healthy
+      eureka-server:
+        condition: service_started
     networks:
       - api-network
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka
       - CONFIG_SERVER_URI=http://config-server:8888
+    command: ["java", "-jar", "/app/app.jar", "--spring.profiles.active=docker"] # Forzamos perfil
 
+  # ------------------------------------------------------------
+  # 5. Search Service
+  # ------------------------------------------------------------
   search-service:
     build: ./microservices/search-service
     container_name: search-service
     ports:
       - "8083:8083"
     depends_on:
-      - eureka-server
-      - config-server
+      config-server:
+        condition: service_healthy
+      eureka-server:
+        condition: service_started
     networks:
       - api-network
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka
       - CONFIG_SERVER_URI=http://config-server:8888
+    command: ["java", "-jar", "/app/app.jar", "--spring.profiles.active=docker"] # Forzamos perfil
 
+  # ------------------------------------------------------------
+  # 6. Frontend
+  # ------------------------------------------------------------
   frontend:
     build: ./frontend
     container_name: api-frontend

@@ -13,8 +13,15 @@ RUN mvn clean package -DskipTests
 # Etapa 2: Imagen ligera para ejecutar
 FROM eclipse-temurin:17-jdk-alpine
 WORKDIR /app
+
+# Copiar el JAR compilado
 COPY --from=build /app/target/*.jar app.jar
 
-# Configura el puerto expuesto (puede variar según el microservicio)
+# 🔹 Copiar también las configuraciones (clave)
+COPY src/main/resources/configurations /configurations
+
+# Configura el puerto expuesto
 EXPOSE 8888
-ENTRYPOINT ["java", "-jar", "app.jar"]
+
+# Usa el perfil docker explícitamente
+ENTRYPOINT ["java", "-jar", "app.jar", "--spring.profiles.active=docker"]
