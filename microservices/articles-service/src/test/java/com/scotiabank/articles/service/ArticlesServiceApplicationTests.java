@@ -8,6 +8,7 @@ class ArticlesServiceApplicationTests {
 
 	@Test
 	void contextLoads() {
+		//Test if the application works
 	}
 
 }

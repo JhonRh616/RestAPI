@@ -8,6 +8,7 @@ class EurekaServerApplicationTests {
 
 	@Test
 	void contextLoads() {
+		//Test if the application works
 	}
 
 }

@@ -1,6 +1,6 @@
 package com.scotiabank.articles.service.controller;
 
-import com.scotiabank.articles.service.dto.ApiGeneralResponse;
+import com.scotiabank.articles.service.dto.ApiGeneralResponseDto;
 import com.scotiabank.articles.service.dto.ArticleDto;
 import com.scotiabank.articles.service.service.ArticleService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -30,8 +30,8 @@ public class ArticleController {
     @Operation(summary = "Get all articles", description = "Retrieve a list of all the articles")
     @ApiResponse(responseCode = "200", description = ARTICLES_RETRIEVED)
     @GetMapping
-    public ResponseEntity<ApiGeneralResponse<List<ArticleDto>>> getAllArticles() {
-        return ResponseEntity.ok(ApiGeneralResponse.success(ARTICLES_RETRIEVED, articleService.getAllArticles()));
+    public ResponseEntity<ApiGeneralResponseDto<List<ArticleDto>>> getAllArticles() {
+        return ResponseEntity.ok(ApiGeneralResponseDto.success(ARTICLES_RETRIEVED, articleService.getAllArticles()));
     }
 
     @Operation(summary = "Get an article by id", description = "Retrieve one article")
@@ -40,8 +40,8 @@ public class ArticleController {
             @ApiResponse(responseCode = "404", description = "Article not found")
     })
     @GetMapping("/{id}")
-    public ResponseEntity<ApiGeneralResponse<ArticleDto>> getArticleById(@PathVariable("id") Long id) {
-        return ResponseEntity.ok(ApiGeneralResponse.success(ARTICLE_RETRIEVED, articleService.findArticleById(id)));
+    public ResponseEntity<ApiGeneralResponseDto<ArticleDto>> getArticleById(@PathVariable("id") Long id) {
+        return ResponseEntity.ok(ApiGeneralResponseDto.success(ARTICLE_RETRIEVED, articleService.findArticleById(id)));
     }
 
     @Operation(summary = "Create a new article", description = "Create a new article with the given data")
@@ -50,10 +50,10 @@ public class ArticleController {
             @ApiResponse(responseCode = "400", description = ERROR_PARAMETERS)
     })
     @PostMapping
-    public ResponseEntity<ApiGeneralResponse<ArticleDto>> createArticle(@Valid @RequestBody ArticleDto articleDto) {
+    public ResponseEntity<ApiGeneralResponseDto<ArticleDto>> createArticle(@Valid @RequestBody ArticleDto articleDto) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(ApiGeneralResponse.success(ARTICLE_CREATED, articleService.createArticle(articleDto)));
+                .body(ApiGeneralResponseDto.success(ARTICLE_CREATED, articleService.createArticle(articleDto)));
     }
 
     @Operation(summary = "Update an article", description = "Update an article by id and the body")
@@ -62,16 +62,16 @@ public class ArticleController {
             @ApiResponse(responseCode = "400", description = ERROR_PARAMETERS)
     })
     @PutMapping("/{id}")
-    public ResponseEntity<ApiGeneralResponse<ArticleDto>> updateArticle(@Valid @RequestBody ArticleDto articleDto, @PathVariable("id") Long id) {
-        return ResponseEntity.ok(ApiGeneralResponse.success(ARTICLES_UPDATED, articleService.updateArticle(articleDto, id)));
+    public ResponseEntity<ApiGeneralResponseDto<ArticleDto>> updateArticle(@Valid @RequestBody ArticleDto articleDto, @PathVariable("id") Long id) {
+        return ResponseEntity.ok(ApiGeneralResponseDto.success(ARTICLES_UPDATED, articleService.updateArticle(articleDto, id)));
     }
 
     @Operation(summary = "Delete an article", description = "Delete an article by id")
     @ApiResponse(responseCode = "200", description = ARTICLES_DELETED)
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiGeneralResponse<Void>> deleteArticle(@PathVariable("id") Long id) {
+    public ResponseEntity<ApiGeneralResponseDto<Void>> deleteArticle(@PathVariable("id") Long id) {
         articleService.deleteArticle(id);
-        return ResponseEntity.ok(ApiGeneralResponse.success(ARTICLES_DELETED, null));
+        return ResponseEntity.ok(ApiGeneralResponseDto.success(ARTICLES_DELETED, null));
     }
 }
 

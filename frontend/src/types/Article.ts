@@ -4,4 +4,5 @@ export interface Article {
   author: string;
   content: string;
   publishedDate: string;
+  branch?: string;
 }

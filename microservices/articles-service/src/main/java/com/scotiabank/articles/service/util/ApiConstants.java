@@ -7,6 +7,7 @@ public class ApiConstants {
 
     public static final String API_BASE_PATH = "/api";
     public static final String ARTICLES_BASE_PATH = API_BASE_PATH + "/articles";
+    public static final String SEARCH_BASE_PATH = ARTICLES_BASE_PATH + "/search";
 
     @UtilityClass
     public static class ApiResponses {

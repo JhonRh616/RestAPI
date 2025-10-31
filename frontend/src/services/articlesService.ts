@@ -1,7 +1,10 @@
 import type { Article } from "../types/Article";
 import type { ApiGeneralResponse } from "../types/ApiGeneralResponse";
+import type { ArticleFilter } from "../types/ArticleFilter";
 
-const API_URL = "http://localhost:8080/api/articles";
+const API_URL = "http://localhost:8080/api";
+const ARTICLES_URL = `${API_URL}/articles`;
+const SEARCH_URL = `${API_URL}/search`;
 
 async function handleResponse<T>(res: Response): Promise<ApiGeneralResponse<T>> {
   try {
@@ -26,24 +29,38 @@ async function safeFetch<T>(url: string, options?: RequestInit): Promise<ApiGene
   }
 }
 
-export const getAllArticles = () => safeFetch<Article[]>(API_URL);
-export const getArticleById = (id: number) => safeFetch<Article>(`${API_URL}/${id}`);
+export const getAllArticles = () => safeFetch<Article[]>(ARTICLES_URL);
+export const getArticleById = (id: number) => safeFetch<Article>(`${ARTICLES_URL}/${id}`);
 
-export const createArticle = (article: Article) =>
-  safeFetch<Article>(API_URL, {
+export const createArticle = async (article: Article) =>
+  safeFetch<Article>(ARTICLES_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(article),
   });
 
 export const updateArticle = async (id: number, article: Article) =>
-  safeFetch<Article>(`${API_URL}/${id}`, {
+  safeFetch<Article>(`${ARTICLES_URL}/${id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(article),
   });
 
 export const deleteArticle = async (id: number) =>
-  safeFetch(`${API_URL}/${id}`, {
+  safeFetch(`${ARTICLES_URL}/${id}`, {
     method: "DELETE",
+  });
+
+//Search Articles
+export const getArticlesByBranch = async (branch: string) => {
+  const url = `${SEARCH_URL}?branch=${encodeURIComponent(branch)}`;
+  return await safeFetch<Article[]>(url);
+};
+
+
+export const getArticlesByFilters = async (filers: ArticleFilter) => 
+  safeFetch<Article>(SEARCH_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(filers),
   });

@@ -8,6 +8,7 @@ class SearchServiceApplicationTests {
 
 	@Test
 	void contextLoads() {
+		//Test if the application works
 	}
 
 }

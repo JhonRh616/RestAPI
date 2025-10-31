@@ -1,5 +1,6 @@
 package com.scotiabank.articles.service.model;
 
+import com.scotiabank.articles.service.config.BranchEntityListener;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -11,6 +12,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@EntityListeners(BranchEntityListener.class)
 public class Article {
 
     @Id
@@ -21,4 +23,5 @@ public class Article {
     private String author;
     private String content;
     private LocalDate publishedDate;
+    private String branch;
 }

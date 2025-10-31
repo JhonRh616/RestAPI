@@ -16,6 +16,7 @@ export default function ArticleModal({ mode, article, onSubmit, onClose }: Props
     author: article?.author || "",
     content: article?.content || "",
     publishedDate: article?.publishedDate || "",
+    branch: article?.branch || "",
   });
 
   const readOnly = mode === "view";
@@ -78,6 +79,18 @@ export default function ArticleModal({ mode, article, onSubmit, onClose }: Props
             onChange={handleChange}
             readOnly={readOnly}
           />
+
+          {(formData.branch !== undefined || !readOnly) && (
+            <>
+              <label>Branch</label>
+              <input
+                name="branch"
+                value={formData.branch || ""}
+                onChange={handleChange}
+                readOnly={readOnly}
+              />
+            </>
+          )}
 
           <div>
             {mode !== "view" && <button type="submit">Save</button>}

@@ -8,6 +8,7 @@ class GatewayServerApplicationTests {
 
 	@Test
 	void contextLoads() {
+		//Test if the application works
 	}
 
 }

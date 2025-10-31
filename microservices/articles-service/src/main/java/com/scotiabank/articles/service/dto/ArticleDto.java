@@ -29,4 +29,7 @@ public class ArticleDto {
 
     @Schema(description = "Publish date of the article", example = "2025-12-17")
     private LocalDate publishedDate;
+
+    @Schema(description = "Branch of the article", example = "Medellin")
+    private String branch;
 }

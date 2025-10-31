@@ -11,6 +11,10 @@ spring:
               uri: lb://articles-service
               predicates:
                 - Path=/api/articles/**
+            - id: search-service
+              uri: lb://search-service
+              predicates:
+                - Path=/api/search/**
 
 eureka:
   client:

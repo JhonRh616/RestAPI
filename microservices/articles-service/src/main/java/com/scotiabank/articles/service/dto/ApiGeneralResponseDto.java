@@ -9,22 +9,22 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ApiGeneralResponse<T> {
+public class ApiGeneralResponseDto<T> {
 
     private boolean success;
     private String message;
     private T body;
 
-    public static <T> ApiGeneralResponse<T> success(String message, T body) {
-        return ApiGeneralResponse.<T>builder()
+    public static <T> ApiGeneralResponseDto<T> success(String message, T body) {
+        return ApiGeneralResponseDto.<T>builder()
                 .success(true)
                 .message(message)
                 .body(body)
                 .build();
     }
 
-    public static <T> ApiGeneralResponse<T> error(String message, T body) {
-        return ApiGeneralResponse.<T>builder()
+    public static <T> ApiGeneralResponseDto<T> error(String message, T body) {
+        return ApiGeneralResponseDto.<T>builder()
                 .success(false)
                 .message(message)
                 .body(body)
