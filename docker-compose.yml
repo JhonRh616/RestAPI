@@ -5,7 +5,7 @@ services:
   # ------------------------------------------------------------
   config-server:
     build: "./microservices/config-server"
-    container_name: restapi-config-server
+    container_name: config-server
     ports:
       - "8888:8888"
     environment:
@@ -22,7 +22,7 @@ services:
       retries: 5
 
   # ------------------------------------------------------------
-  # 2. Eureka Server (Profile forced via command)
+  # 2. Eureka Server 
   # ------------------------------------------------------------
   eureka-server:
     build: ./microservices/eureka-server
@@ -31,15 +31,19 @@ services:
       - "8761:8761"
     depends_on:
       config-server:
-        condition: service_healthy # Espera que Config Server esté listo
+        condition: service_healthy 
     networks:
       - api-network
     environment:
-      # Usamos CONFIG_SERVER_URI para el import del YML
       - CONFIG_SERVER_URI=http://config-server:8888
       - SPRING_PROFILES_ACTIVE=docker
-    # CRUCIAL: Forzamos el perfil 'docker' con un argumento de comando
     command: ["java", "-jar", "/app/app.jar", "--spring.profiles.active=docker"]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
 
   # ------------------------------------------------------------
   # 3. Gateway Server
@@ -53,13 +57,13 @@ services:
       config-server:
         condition: service_healthy
       eureka-server:
-        condition: service_started
+        condition: service_healthy
     networks:
       - api-network
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka
       - CONFIG_SERVER_URI=http://config-server:8888
-    command: ["java", "-jar", "/app/app.jar", "--spring.profiles.active=docker"] # Forzamos perfil
+    command: ["java", "-jar", "/app/app.jar", "--spring.profiles.active=docker"] 
 
   # ------------------------------------------------------------
   # 4. Articles Service
@@ -73,13 +77,13 @@ services:
       config-server:
         condition: service_healthy
       eureka-server:
-        condition: service_started
+        condition: service_healthy
     networks:
       - api-network
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka
       - CONFIG_SERVER_URI=http://config-server:8888
-    command: ["java", "-jar", "/app/app.jar", "--spring.profiles.active=docker"] # Forzamos perfil
+    command: ["java", "-jar", "/app/app.jar", "--spring.profiles.active=docker"] 
 
   # ------------------------------------------------------------
   # 5. Search Service
@@ -93,7 +97,7 @@ services:
       config-server:
         condition: service_healthy
       eureka-server:
-        condition: service_started
+        condition: service_healthy
     networks:
       - api-network
     environment:

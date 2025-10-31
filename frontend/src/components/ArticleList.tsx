@@ -16,10 +16,8 @@ export default function ArticleList({ articles, onEdit, onView, onDelete }: Prop
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
 
-  // modo: 'local' = tu vista actual; 'services' = usa endpoints getArticlesByBranch/getArticlesByFilters
   const [mode, setMode] = useState<"local" | "services">("local");
 
-  // para resultados externos
   const DEFAULT_BRANCH = "Medellin";
   const [serviceArticles, setServiceArticles] = useState<Article[]>([]);
   const [branchQuery, setBranchQuery] = useState("");
@@ -28,7 +26,6 @@ export default function ArticleList({ articles, onEdit, onView, onDelete }: Prop
   const [loading, setLoading] = useState(false);
   const [serviceError, setServiceError] = useState<string | null>(null);
 
-  // decide la lista a mostrar (local o servicios)
   const sourceArticles = mode === "local" ? articles : serviceArticles;
 
   const filteredArticles = useMemo(() => {
@@ -47,12 +44,11 @@ export default function ArticleList({ articles, onEdit, onView, onDelete }: Prop
     if (currentPage > totalPages) setCurrentPage(1);
   }, [totalPages]);
 
-    useEffect(() => {
+  useEffect(() => {
     if (mode === "services") {
       setBranchQuery(DEFAULT_BRANCH);
       fetchByBranch(DEFAULT_BRANCH);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mode]);
 
   const startIndex = (currentPage - 1) * itemsPerPage;

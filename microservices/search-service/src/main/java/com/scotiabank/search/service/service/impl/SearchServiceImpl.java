@@ -5,6 +5,7 @@ import com.scotiabank.search.service.dto.ArticleDto;
 import com.scotiabank.search.service.dto.ArticleFilterDto;
 import com.scotiabank.search.service.service.SearchService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -20,10 +21,13 @@ public class SearchServiceImpl implements SearchService {
 
     private final RestTemplate restTemplate;
 
+    @Value("${articles.service.search}")
+    private String searchEndpoint;
+
     @Override
     public List<ArticleDto> getArticlesByBranch(String branch) {
         ResponseEntity<ApiGeneralResponseDto<List<ArticleDto>>> responseEntity =
-                restTemplate.exchange("http://localhost:8080/api/articles/search/"+branch,
+                restTemplate.exchange(searchEndpoint+"/"+branch,
                 HttpMethod.GET, null, new ParameterizedTypeReference<>() {});
 
         return responseEntity.getBody().getBody();
@@ -33,7 +37,7 @@ public class SearchServiceImpl implements SearchService {
     public List<ArticleDto> getArticlesByFilters(ArticleFilterDto filterDto) {
         HttpEntity<ArticleFilterDto> requestEntity = new HttpEntity<>(filterDto);
         ResponseEntity<ApiGeneralResponseDto<List<ArticleDto>>> responseEntity =
-                restTemplate.exchange("http://localhost:8080/api/articles/search",
+                restTemplate.exchange(searchEndpoint,
                         HttpMethod.POST, requestEntity, new ParameterizedTypeReference<>() {});
 
         return responseEntity.getBody().getBody();

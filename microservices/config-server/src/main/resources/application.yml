@@ -5,12 +5,13 @@ spring:
   application:
     name: config-server
   profiles:
-    # Activa 'local' y 'native' por defecto
     active: ${SPRING_PROFILES_ACTIVE:local,native}
-    # O, si solo quieres el nativo: active: ${SPRING_PROFILES_ACTIVE:native}
 
 management:
   endpoints:
     web:
       exposure:
         include: health,info
+  endpoint:
+    health:
+      show-details: always

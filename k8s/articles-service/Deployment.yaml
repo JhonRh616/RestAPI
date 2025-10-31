@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: articles-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: articles-service
+  template:
+    metadata:
+      labels:
+        app: articles-service
+    spec:
+      containers:
+        - name: articles-service
+          image: restapi-articles-service:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8082
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: docker
+            - name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+              value: http://eureka-server:8761/eureka
+            - name: CONFIG_SERVER_URI
+              value: http://config-server:8888

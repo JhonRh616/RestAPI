@@ -5,3 +5,7 @@ eureka:
   client:
     service-url:
       default-zone: http://localhost:8761/eureka
+
+articles:
+  service:
+    search: http://localhost:8080/api/articles/search

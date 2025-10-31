@@ -1,0 +1,11 @@
+server:
+  port: 8083
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka-server:8761/eureka
+
+articles:
+  service:
+    search: http://gateway-server:8080/api/articles/search

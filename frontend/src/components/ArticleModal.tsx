@@ -80,14 +80,13 @@ export default function ArticleModal({ mode, article, onSubmit, onClose }: Props
             readOnly={readOnly}
           />
 
-          {(formData.branch !== undefined || !readOnly) && (
+          {mode === "view" && formData.branch && (
             <>
               <label>Branch</label>
               <input
                 name="branch"
-                value={formData.branch || ""}
-                onChange={handleChange}
-                readOnly={readOnly}
+                value={formData.branch}
+                readOnly
               />
             </>
           )}
